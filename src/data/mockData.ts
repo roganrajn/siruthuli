@@ -34,6 +34,21 @@ function buildTrusteeContributions(): Contribution[] {
 
 export const mockDonations: Donation[] = [
   {
+    id: '7',
+    name: 'Loga Mithran & Guru Dharsan',
+    age: 16,
+    gender: 'Male',
+    amount: 20000,
+    reason: 'Education Support',
+    proposedBy: 'Balaji',
+    date: '2026-05-14',
+    description:
+      'Parents faced medical emergency and unable to pay child education fees.',
+    photos: [],
+    category: 'Education',
+    createdAt: '2026-05-14T10:00:00Z',
+  },
+  {
     id: '1',
     name: 'Thajudeen A',
     age: 19,

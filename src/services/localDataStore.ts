@@ -1,5 +1,5 @@
 const VERSION_KEY = 'siruthuli_data_version'
-const CURRENT_VERSION = '1'
+const CURRENT_VERSION = '2'
 
 export const STORAGE_KEYS = {
   contributions: 'siruthuli_contributions',
