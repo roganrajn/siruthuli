@@ -1,0 +1,57 @@
+---
+alwaysApply: true
+---
+You are a senior Vue 3 architect.
+
+Project:
+Siruthuli Foundation Website.
+
+Tech stack:
+
+* Vue 3
+* TypeScript
+* Vite
+* Tailwind CSS
+* Pinia
+* Firebase Firestore
+* Firebase Storage
+
+Requirements:
+
+1. Public website
+2. Admin dashboard
+3. JSON based admin login
+4. Component based architecture
+5. Reusable components
+6. Responsive mobile-first design
+7. Modern NGO/foundation UI
+8. Use script setup syntax
+9. Use TypeScript interfaces
+10. Use Pinia store
+11. Prefer composables and service architecture
+12. Avoid any
+13. Clean folder structure
+14. Tailwind for styling
+15. Use .then() and .catch() for Firebase calls
+16. Use card-based UI for donations
+17. Use modal for donation details
+18. Include loading states
+19. Include search and filters
+20. Use Firestore collections:
+
+    * donations
+    * contributions
+    * expenses
+
+Theme:
+Primary: #0F9D77
+Secondary: #087F5B
+Accent: #F59E0B
+
+Admin routes:
+
+* /admin/login
+* /admin/dashboard
+* /admin/donations
+* /admin/contributions
+* /admin/expenses

@@ -12,11 +12,7 @@ export const expenseService = {
       localExpenses = loadCollection(STORAGE_KEYS.expenses, mockExpenses)
       return [...localExpenses]
     }
-    try {
-      return await getAllSimple<Expense>(COLLECTIONS.expenses)
-    } catch {
-      return [...localExpenses]
-    }
+    return getAllSimple<Expense>(COLLECTIONS.expenses)
   },
 
   async create(data: Omit<Expense, 'id'>): Promise<string> {
@@ -38,7 +34,7 @@ export const expenseService = {
       }
       return
     }
-    await update(COLLECTIONS.expenses, id, data)
+    await update(COLLECTIONS.expenses, id, data as Record<string, unknown>)
   },
 
   async delete(id: string): Promise<void> {

@@ -12,11 +12,7 @@ export const contributionService = {
       localContributions = loadCollection(STORAGE_KEYS.contributions, mockContributions)
       return [...localContributions]
     }
-    try {
-      return await getAllSimple<Contribution>(COLLECTIONS.contributions)
-    } catch {
-      return [...localContributions]
-    }
+    return getAllSimple<Contribution>(COLLECTIONS.contributions)
   },
 
   async create(data: Omit<Contribution, 'id'>): Promise<string> {
@@ -38,7 +34,7 @@ export const contributionService = {
       }
       return
     }
-    await update(COLLECTIONS.contributions, id, data)
+    await update(COLLECTIONS.contributions, id, data as Record<string, unknown>)
   },
 
   async delete(id: string): Promise<void> {

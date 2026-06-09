@@ -12,11 +12,7 @@ export const donationService = {
       localDonations = loadCollection(STORAGE_KEYS.donations, mockDonations)
       return [...localDonations]
     }
-    try {
-      return await getAll<Donation>(COLLECTIONS.donations)
-    } catch {
-      return [...localDonations]
-    }
+    return getAll<Donation>(COLLECTIONS.donations)
   },
 
   async create(data: Omit<Donation, 'id' | 'createdAt'>): Promise<string> {
@@ -42,7 +38,7 @@ export const donationService = {
       }
       return
     }
-    await update(COLLECTIONS.donations, id, data)
+    await update(COLLECTIONS.donations, id, data as Record<string, unknown>)
   },
 
   async delete(id: string): Promise<void> {

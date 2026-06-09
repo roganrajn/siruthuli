@@ -25,32 +25,42 @@ export async function seedDatabase(): Promise<{ donations: number; contributions
   }
 
   const db = getDb()
-  const batch = writeBatch(db)
+  const allOps: { collection: string; id: string; data: Record<string, unknown> }[] = []
 
   for (const donation of mockDonations) {
     const { id, ...data } = donation
-    batch.set(doc(db, COLLECTIONS.donations, id), data)
+    allOps.push({ collection: COLLECTIONS.donations, id, data })
   }
 
   for (const contribution of mockContributions) {
     const { id, ...data } = contribution
-    batch.set(doc(db, COLLECTIONS.contributions, id), {
-      ...data,
-      createdAt: new Date().toISOString(),
+    allOps.push({
+      collection: COLLECTIONS.contributions,
+      id,
+      data: { ...data, createdAt: new Date().toISOString() },
     })
   }
 
   for (const expense of mockExpenses) {
     const { id, ...data } = expense
-    batch.set(doc(db, COLLECTIONS.expenses, id), data)
+    allOps.push({ collection: COLLECTIONS.expenses, id, data })
   }
 
   for (const event of mockGallery) {
     const { id, ...data } = event
-    batch.set(doc(db, COLLECTIONS.gallery, id), data)
+    allOps.push({ collection: COLLECTIONS.gallery, id, data })
   }
 
-  await batch.commit()
+  // Firestore batch limit is 500 operations
+  const chunkSize = 450
+  for (let i = 0; i < allOps.length; i += chunkSize) {
+    const batch = writeBatch(db)
+    const chunk = allOps.slice(i, i + chunkSize)
+    for (const op of chunk) {
+      batch.set(doc(db, op.collection, op.id), op.data)
+    }
+    await batch.commit()
+  }
 
   return {
     donations: mockDonations.length,

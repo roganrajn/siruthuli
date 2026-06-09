@@ -70,8 +70,11 @@
         </div>
         <div class="flex justify-end gap-3 pt-2">
           <button type="button" class="btn-secondary" @click="closeForm">Cancel</button>
-          <button type="submit" class="btn-primary">Save</button>
+          <button type="submit" class="btn-primary" :disabled="saving">
+            {{ saving ? 'Saving...' : 'Save' }}
+          </button>
         </div>
+        <p v-if="formError" class="text-sm text-red-600">{{ formError }}</p>
       </form>
     </BaseModal>
   </div>
@@ -87,6 +90,8 @@ import BaseModal from '@/components/common/BaseModal.vue'
 const contributionsStore = useContributionsStore()
 const showForm = ref(false)
 const editingId = ref<string | null>(null)
+const saving = ref(false)
+const formError = ref('')
 
 const defaultForm = () => ({
   contributorName: '',
@@ -101,6 +106,7 @@ const defaultForm = () => ({
 const form = reactive(defaultForm())
 
 function openForm(item?: Contribution) {
+  formError.value = ''
   if (item) {
     editingId.value = item.id
     Object.assign(form, {
@@ -125,12 +131,35 @@ function closeForm() {
 }
 
 async function handleSubmit() {
-  if (editingId.value) {
-    await contributionsStore.editContribution(editingId.value, { ...form })
-  } else {
-    await contributionsStore.addContribution({ ...form })
+  saving.value = true
+  formError.value = ''
+  try {
+    const payload = {
+      ...form,
+      isTrustee: form.isTrustee && form.contributorName === form.trusteeName,
+    }
+    if (editingId.value) {
+      await contributionsStore.editContribution(editingId.value, payload)
+    } else {
+      await contributionsStore.addContribution(payload)
+    }
+    closeForm()
+  } catch (err) {
+    formError.value = formatFirebaseError(err)
+  } finally {
+    saving.value = false
   }
-  closeForm()
+}
+
+function formatFirebaseError(err: unknown): string {
+  const message = err instanceof Error ? err.message : String(err)
+  if (message.includes('permission') || message.includes('PERMISSION_DENIED')) {
+    return 'Permission denied. In Firebase Console → Firestore → Rules, allow read/write, then try again.'
+  }
+  if (message.includes('unavailable') || message.includes('not-found')) {
+    return 'Firestore not reachable. Make sure the database is created and seeded in Settings.'
+  }
+  return message || 'Save failed. Try seeding the database in Settings first.'
 }
 
 async function handleDelete(id: string) {

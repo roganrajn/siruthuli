@@ -17,16 +17,18 @@
       </div>
 
       <div v-if="configured" class="mt-4 space-y-3">
-        <p v-if="dbEmpty === true" class="text-sm text-amber-700">
+        <p v-if="checking" class="text-sm text-gray-500">Checking Firestore...</p>
+        <p v-else-if="dbEmpty === true" class="text-sm text-amber-700">
           Firestore is empty. Seed it with your real Siruthuli data (including the ₹20,000 donation).
         </p>
         <p v-else-if="dbEmpty === false" class="text-sm text-green-700">
           Firestore has data. Admin changes sync to the public website for everyone.
         </p>
+        <p v-else-if="checkError" class="text-sm text-amber-700">{{ checkError }}</p>
 
         <button
           class="btn-primary"
-          :disabled="seeding || checking"
+          :disabled="seeding"
           @click="handleSeed"
         >
           {{ seeding ? 'Seeding...' : 'Seed Database with Real Data' }}
@@ -73,14 +75,23 @@ const checking = ref(false)
 const seeding = ref(false)
 const seedMessage = ref('')
 const seedError = ref('')
+const checkError = ref('')
 
 async function checkDatabase() {
   if (!configured) return
   checking.value = true
+  checkError.value = ''
   try {
-    dbEmpty.value = await isDatabaseEmpty()
-  } catch {
+    const timeout = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error('Firestore check timed out. Enable Firestore in Firebase Console.')), 10000),
+    )
+    dbEmpty.value = await Promise.race([isDatabaseEmpty(), timeout])
+  } catch (err) {
     dbEmpty.value = null
+    checkError.value =
+      err instanceof Error
+        ? err.message
+        : 'Could not reach Firestore. Enable it in Firebase Console → Build → Firestore Database.'
   } finally {
     checking.value = false
   }
@@ -98,7 +109,15 @@ async function handleSeed() {
     dbEmpty.value = false
     await refreshAllPublicData()
   } catch (err) {
-    seedError.value = err instanceof Error ? err.message : 'Seed failed. Check Firestore rules in Firebase Console.'
+    const message = err instanceof Error ? err.message : 'Seed failed.'
+    if (message.includes('permission') || message.includes('PERMISSION_DENIED')) {
+      seedError.value =
+        'Permission denied. In Firebase Console → Firestore → Rules, set allow read, write: if true (test mode), then try again.'
+    } else if (message.includes('not-found') || message.includes('NOT_FOUND')) {
+      seedError.value = 'Firestore not enabled. Go to Firebase Console → Build → Firestore Database → Create database.'
+    } else {
+      seedError.value = message
+    }
   } finally {
     seeding.value = false
   }

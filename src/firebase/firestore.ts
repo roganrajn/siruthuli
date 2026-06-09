@@ -3,7 +3,7 @@ import {
   doc,
   getDocs,
   addDoc,
-  updateDoc,
+  setDoc,
   deleteDoc,
   query,
   orderBy,
@@ -49,7 +49,10 @@ export async function update(
   id: string,
   data: Record<string, unknown>,
 ): Promise<void> {
-  await updateDoc(doc(getDb(), collectionName, id), data)
+  const cleaned = Object.fromEntries(
+    Object.entries(data).filter(([, value]) => value !== undefined),
+  )
+  await setDoc(doc(getDb(), collectionName, id), cleaned, { merge: true })
 }
 
 export async function remove(collectionName: string, id: string): Promise<void> {
