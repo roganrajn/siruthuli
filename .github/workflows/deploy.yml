@@ -27,9 +27,25 @@ jobs:
 
       - run: npm ci
 
+      - name: Create admin credentials for deploy
+        run: |
+          mkdir -p public/data
+          cat > public/data/admin-credentials.json <<EOF
+          {
+            "allowedUsers": [
+              {
+                "email": "${{ secrets.ADMIN_EMAIL }}",
+                "password": "${{ secrets.ADMIN_PASSWORD }}"
+              }
+            ]
+          }
+          EOF
+
       - name: Build
         env:
           VITE_BASE_PATH: /siruthuli/
+          VITE_ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+          VITE_ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
           VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
           VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
           VITE_FIREBASE_PROJECT_ID: ${{ secrets.VITE_FIREBASE_PROJECT_ID }}

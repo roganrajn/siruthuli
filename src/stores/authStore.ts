@@ -20,8 +20,11 @@ export const useAuthStore = defineStore('auth', () => {
       }
       error.value = 'Invalid email or password'
       return false
-    } catch {
-      error.value = 'Could not load credentials. Check admin-credentials.json'
+    } catch (err) {
+      error.value =
+        err instanceof Error && err.message.includes('credentials')
+          ? 'Could not load admin credentials. Ensure public/data/admin-credentials.json exists or set VITE_ADMIN_EMAIL / VITE_ADMIN_PASSWORD in .env'
+          : 'Could not load credentials. Check admin-credentials.json'
       return false
     } finally {
       loading.value = false

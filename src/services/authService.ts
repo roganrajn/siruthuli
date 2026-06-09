@@ -2,12 +2,32 @@ import axios from 'axios'
 import type { AdminCredentials } from '@/types'
 
 const AUTH_SESSION_KEY = 'siruthuli_admin_session'
-const CREDENTIALS_URL = '/data/admin-credentials.json'
+
+function credentialsUrl(): string {
+  const base = import.meta.env.BASE_URL || '/'
+  return `${base}data/admin-credentials.json`
+}
+
+function credentialsFromEnv(): AdminCredentials | null {
+  const email = import.meta.env.VITE_ADMIN_EMAIL
+  const password = import.meta.env.VITE_ADMIN_PASSWORD
+  if (!email || !password) return null
+  return { allowedUsers: [{ email, password }] }
+}
 
 export const authService = {
   async fetchCredentials(): Promise<AdminCredentials> {
-    const { data } = await axios.get<AdminCredentials>(CREDENTIALS_URL)
-    return data
+    try {
+      const { data } = await axios.get<AdminCredentials>(credentialsUrl())
+      if (data?.allowedUsers?.length) return data
+    } catch {
+      // fall through to env fallback
+    }
+
+    const fromEnv = credentialsFromEnv()
+    if (fromEnv) return fromEnv
+
+    throw new Error('Could not load admin credentials')
   },
 
   async login(email: string, password: string): Promise<boolean> {
