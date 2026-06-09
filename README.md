@@ -38,20 +38,35 @@ Credentials are loaded from `public/data/admin-credentials.json`:
 
 > **Note:** This file is gitignored. For production, restrict access to this file or use server-side auth.
 
-## Firebase Setup (Optional)
+## Firebase Setup
 
-Copy `.env.example` to `.env` and add your Firebase config:
+Project: **siruthuli-foundation**
 
-```env
-VITE_FIREBASE_API_KEY=...
-VITE_FIREBASE_AUTH_DOMAIN=...
-VITE_FIREBASE_PROJECT_ID=...
-VITE_FIREBASE_STORAGE_BUCKET=...
-VITE_FIREBASE_MESSAGING_SENDER_ID=...
-VITE_FIREBASE_APP_ID=...
-```
+1. Copy `.env.example` → `.env` and add your Firebase config (already done locally if you have `.env`).
 
-Without Firebase, the app runs with in-memory mock data (resets on page refresh).
+2. In [Firebase Console](https://console.firebase.google.com/project/siruthuli-foundation):
+   - Enable **Firestore Database** (start in test mode, then deploy rules)
+   - Enable **Storage** (for photo uploads later)
+
+3. Deploy Firestore rules:
+   ```bash
+   npm install -g firebase-tools
+   firebase login
+   firebase deploy --only firestore:rules --project siruthuli-foundation
+   ```
+
+4. **Seed data:** Login to admin → **Settings** → **Seed Database with Real Data** (uploads all donations including ₹20k entry).
+
+5. **GitHub Pages:** Add these as repo **Settings → Secrets → Actions**:
+   - `VITE_FIREBASE_API_KEY`
+   - `VITE_FIREBASE_AUTH_DOMAIN`
+   - `VITE_FIREBASE_PROJECT_ID`
+   - `VITE_FIREBASE_STORAGE_BUCKET`
+   - `VITE_FIREBASE_MESSAGING_SENDER_ID`
+   - `VITE_FIREBASE_APP_ID`
+   - `VITE_FIREBASE_MEASUREMENT_ID`
+
+Without Firebase env vars, the app falls back to browser localStorage mock data.
 
 ## Project Structure
 
