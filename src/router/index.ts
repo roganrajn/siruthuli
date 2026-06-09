@@ -34,6 +34,7 @@ const router = createRouter({
         { path: 'donations', name: 'admin-donations', component: () => import('@/pages/admin/DonationsPage.vue') },
         { path: 'contributions', name: 'admin-contributions', component: () => import('@/pages/admin/ContributionsPage.vue') },
         { path: 'expenses', name: 'admin-expenses', component: () => import('@/pages/admin/ExpensesPage.vue') },
+        { path: 'gallery', name: 'admin-gallery', component: () => import('@/pages/admin/GalleryPage.vue') },
         { path: 'settings', name: 'admin-settings', component: () => import('@/pages/admin/SettingsPage.vue') },
       ],
     },

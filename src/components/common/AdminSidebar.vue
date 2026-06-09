@@ -26,6 +26,7 @@ const links = [
   { to: '/admin/donations', label: 'Donations', icon: '💚' },
   { to: '/admin/contributions', label: 'Contributions', icon: '🤝' },
   { to: '/admin/expenses', label: 'Expenses', icon: '📋' },
+  { to: '/admin/gallery', label: 'Gallery', icon: '📷' },
   { to: '/admin/settings', label: 'Settings', icon: '⚙️' },
 ]
 </script>

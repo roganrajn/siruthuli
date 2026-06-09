@@ -19,31 +19,43 @@
       </div>
     </section>
 
-    <section class="mt-12 space-y-6">
+    <section class="mt-12 space-y-4">
       <ContributionMonthCard
-        v-for="(items, month) in sortedMonths"
-        :key="month"
-        :month="month"
-        :items="items"
+        v-for="(entry, index) in monthList"
+        :key="entry.month"
+        :month="entry.month"
+        :items="entry.items"
+        :expanded="index === 0 || expandedMonths.has(entry.month)"
+        :is-first="index === 0"
+        @toggle="toggleMonth(entry.month)"
       />
     </section>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, ref } from 'vue'
 import { useContributionsStore } from '@/stores/contributionsStore'
+import type { Contribution } from '@/types'
 import BarChart from '@/components/charts/BarChart.vue'
 import ContributionMonthCard from '@/components/cards/ContributionMonthCard.vue'
 
 const contributionsStore = useContributionsStore()
+const expandedMonths = ref<Set<string>>(new Set())
 
-const sortedMonths = computed(() => {
+const monthList = computed(() => {
   const grouped = contributionsStore.groupedByMonth
-  return Object.fromEntries(
-    Object.entries(grouped).sort(([a], [b]) => b.localeCompare(a)),
-  )
+  return Object.entries(grouped)
+    .sort(([a], [b]) => b.localeCompare(a))
+    .map(([month, items]) => ({ month, items: items as Contribution[] }))
 })
+
+function toggleMonth(month: string) {
+  const next = new Set(expandedMonths.value)
+  if (next.has(month)) next.delete(month)
+  else next.add(month)
+  expandedMonths.value = next
+}
 
 const chartLabels = computed(() =>
   [...contributionsStore.monthlyTotals].reverse().map((m) => m.month),
@@ -51,6 +63,4 @@ const chartLabels = computed(() =>
 const chartValues = computed(() =>
   [...contributionsStore.monthlyTotals].reverse().map((m) => m.total),
 )
-
-onMounted(() => contributionsStore.fetchAll())
 </script>

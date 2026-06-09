@@ -1,11 +1,11 @@
 import { COLLECTIONS, getAllSimple, create } from '@/firebase/firestore'
 import { isFirebaseConfigured } from '@/firebase/config'
-import { mockHelpRequests, mockGallery } from '@/data/mockData'
+import { mockHelpRequests } from '@/data/mockData'
 import { contributionService } from '@/services/contributionService'
 import { donationService } from '@/services/donationService'
 import { expenseService } from '@/services/expenseService'
 import { computeFinanceSummary } from '@/utils/financeCalculator'
-import type { FinanceSummary, HelpRequest, GalleryEvent } from '@/types'
+import type { FinanceSummary, HelpRequest } from '@/types'
 
 export const financeService = {
   async getSummary(): Promise<FinanceSummary[]> {
@@ -42,16 +42,5 @@ export const helpRequestService = {
       return mockHelpRequests[0].id
     }
     return create(COLLECTIONS.helpRequests, payload)
-  },
-}
-
-export const galleryService = {
-  async getAll(): Promise<GalleryEvent[]> {
-    if (!isFirebaseConfigured()) return [...mockGallery]
-    try {
-      return await getAllSimple<GalleryEvent>(COLLECTIONS.gallery)
-    } catch {
-      return [...mockGallery]
-    }
   },
 }

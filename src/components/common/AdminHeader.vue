@@ -25,6 +25,7 @@ const titles: Record<string, string> = {
   'admin-donations': 'Manage Donations',
   'admin-contributions': 'Manage Contributions',
   'admin-expenses': 'Expense Tracking',
+  'admin-gallery': 'Manage Gallery',
   'admin-settings': 'Settings',
 }
 

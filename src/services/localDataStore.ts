@@ -5,6 +5,7 @@ export const STORAGE_KEYS = {
   contributions: 'siruthuli_contributions',
   donations: 'siruthuli_donations',
   expenses: 'siruthuli_expenses',
+  gallery: 'siruthuli_gallery',
 } as const
 
 function ensureVersion(): void {

@@ -68,6 +68,8 @@ export interface GalleryEvent {
   date: string
   description: string
   photos: string[]
+  videos: string[]
+  createdAt?: string
 }
 
 export interface Trustee {

@@ -48,7 +48,11 @@ export async function seedDatabase(): Promise<{ donations: number; contributions
 
   for (const event of mockGallery) {
     const { id, ...data } = event
-    allOps.push({ collection: COLLECTIONS.gallery, id, data })
+    allOps.push({
+      collection: COLLECTIONS.gallery,
+      id,
+      data: { ...data, photos: data.photos ?? [], videos: data.videos ?? [] },
+    })
   }
 
   // Firestore batch limit is 500 operations

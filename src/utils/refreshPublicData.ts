@@ -1,16 +1,19 @@
 import { useContributionsStore } from '@/stores/contributionsStore'
 import { useDonationsStore } from '@/stores/donationsStore'
 import { useFinanceStore } from '@/stores/financeStore'
+import { useGalleryStore } from '@/stores/galleryStore'
 
 /** Reload all public-facing data from storage / Firebase */
 export async function refreshAllPublicData(): Promise<void> {
   const contributionsStore = useContributionsStore()
   const donationsStore = useDonationsStore()
   const financeStore = useFinanceStore()
+  const galleryStore = useGalleryStore()
 
   await Promise.all([
     contributionsStore.fetchAll(),
     donationsStore.fetchAll(),
     financeStore.fetchAll(),
+    galleryStore.fetchAll(),
   ])
 }

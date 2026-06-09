@@ -51,14 +51,26 @@
         </div>
 
         <div v-if="donationsStore.loading" class="mt-8 text-center text-gray-500">Loading...</div>
-        <div v-else class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <DonationCard
-            v-for="donation in donationsStore.filteredDonations"
-            :key="donation.id"
-            :donation="donation"
-            @click="selectedDonation = donation"
-          />
-        </div>
+        <template v-else>
+          <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <DonationCard
+              v-for="donation in paginatedItems"
+              :key="donation.id"
+              :donation="donation"
+              @click="selectedDonation = donation"
+            />
+          </div>
+
+          <div v-if="donationsStore.filteredDonations.length" class="mt-8">
+            <PaginationControls
+              v-model:page="page"
+              v-model:page-size="pageSize"
+              :total="donationsStore.filteredDonations.length"
+            />
+          </div>
+
+          <p v-else class="mt-8 text-center text-gray-500">No helps match your filters.</p>
+        </template>
       </div>
     </section>
 
@@ -67,20 +79,33 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useDonationsStore } from '@/stores/donationsStore'
 import { useFinanceStore } from '@/stores/financeStore'
+import { usePagination } from '@/composables/usePagination'
 import { TRUSTEE_NAMES } from '@/data/mockData'
 import { formatCurrency } from '@/utils/formatters'
 import type { Donation } from '@/types'
 import StatCard from '@/components/cards/StatCard.vue'
 import DonationCard from '@/components/cards/DonationCard.vue'
 import DonationDetailModal from '@/components/cards/DonationDetailModal.vue'
+import PaginationControls from '@/components/common/PaginationControls.vue'
 
 const donationsStore = useDonationsStore()
 const financeStore = useFinanceStore()
 const selectedDonation = ref<Donation | null>(null)
+
+const filtered = computed(() => donationsStore.filteredDonations)
+const { page, pageSize, paginatedItems } = usePagination(filtered, 7)
+
+watch(
+  () => donationsStore.filters,
+  () => {
+    page.value = 1
+  },
+  { deep: true },
+)
 
 const stats = computed(() => [
   { label: 'Total Helped', value: formatCurrency(donationsStore.totalHelped) + '+' },

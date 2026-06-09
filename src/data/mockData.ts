@@ -159,6 +159,7 @@ export const mockGallery: GalleryEvent[] = [
     date: '2025-10-10',
     description: 'Education support for Thajudeen A.',
     photos: [],
+    videos: [],
   },
   {
     id: '2',
@@ -167,6 +168,7 @@ export const mockGallery: GalleryEvent[] = [
     date: '2025-11-01',
     description: 'NICU support for premature baby Siyana.',
     photos: [],
+    videos: [],
   },
   {
     id: '3',
@@ -175,6 +177,7 @@ export const mockGallery: GalleryEvent[] = [
     date: '2026-01-03',
     description: 'Briyani distributed to 50 people.',
     photos: [],
+    videos: [],
   },
 ]
 
